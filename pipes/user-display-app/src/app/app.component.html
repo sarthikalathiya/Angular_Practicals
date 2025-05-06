@@ -1,0 +1,18 @@
+<div class="container">
+  <h1>User List</h1>
+  
+  <div class="user-list" *ngIf="users$ | async as users; else loading">
+    <div class="user-card" *ngFor="let user of users">
+      <h2>{{ user.name }}</h2>
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Phone:</strong> {{ user.phone | phoneMask }}</p>
+      <p><strong>Website:</strong> {{ user.website }}</p>
+      <p><strong>Company:</strong> {{ user.company.name }}</p>
+    </div>
+  </div>
+  
+  <ng-template #loading>
+    <div class="loading">Loading users...</div>
+  </ng-template>
+</div> 
