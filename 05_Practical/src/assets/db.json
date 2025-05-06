@@ -1,0 +1,27 @@
+{
+  "departments": [
+    {
+      "id": 1,
+      "name": "IT"
+    },
+    {
+      "id": 2,
+      "name": "HR"
+    },
+    {
+      "id": 3,
+      "name": "Finance"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "department": "IT",
+      "salary": 75000,
+      "password": "Test@123",
+      "joinDate": "2024-03-15"
+    }
+  ]
+} 
