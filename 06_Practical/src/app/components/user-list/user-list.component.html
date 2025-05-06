@@ -1,0 +1,23 @@
+<div class="container mt-4">
+  <h2>Users List</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name (Uppercase)</th>
+        <th>Email (Mail Link)</th>
+        <th>Department (Lowercase)</th>
+        <th>Salary (Currency)</th>
+        <th>Join Date (Date)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name | uppercase }}</td>
+        <td> <span [innerHTML]="users[0].email | emailLink"></span></td>
+        <td>{{ user.department | lowercase }}</td>
+        <td>{{ user.salary | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>{{ user.joinDate | date:'fullDate' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div> 
