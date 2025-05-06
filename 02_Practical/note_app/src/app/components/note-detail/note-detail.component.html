@@ -1,0 +1,17 @@
+<div class="container">
+  @if (note) {
+    <div class="note-detail">
+      <h1 class="note-title">{{ note.name }}</h1>
+      <p class="date">Created: {{ note.createdDate | date:'medium' }}</p>
+      <div class="content">
+        {{ note.content }}
+      </div>
+      <a routerLink="/" class="btn btn-primary">Back to Notes</a>
+    </div>
+  } @else {
+    <div class="note-detail">
+      <h1 class="note-title">Note not found</h1>
+      <a routerLink="/" class="btn btn-primary">Back to Notes</a>
+    </div>
+  }
+</div> 
