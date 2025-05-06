@@ -1,0 +1,53 @@
+<div class="container">
+  <h2>Department Management System</h2>
+  
+  <div class="actions">
+    <div class="add-form">
+      <input 
+        type="text" 
+        placeholder="Department name" 
+        [(ngModel)]="newDepartmentName"
+        (keyup.enter)="addDepartment()">
+      <button (click)="addDepartment()">Add Department</button>
+    </div>
+    
+    <div class="add-form">
+      <input 
+        type="text" 
+        placeholder="User name" 
+        [(ngModel)]="newUserName"
+        (keyup.enter)="addUser()">
+      <select [(ngModel)]="newUserDepartment">
+        <option *ngFor="let dept of departments" [ngValue]="dept.id">{{ dept.name }}</option>
+      </select>
+      <button (click)="addUser()">Add User</button>
+    </div>
+  </div>
+  
+  <div class="filter">
+    <label>Filter by Department: </label>
+    <select [(ngModel)]="selectedDepartment" (change)="filterByDepartment(selectedDepartment)">
+      <option [ngValue]="null">All Departments</option>
+      <option *ngFor="let dept of departments" [ngValue]="dept.id">{{ dept.name }}</option>
+    </select>
+  </div>
+  
+  <div class="departments">
+    <div class="department" *ngFor="let dept of getDepartmentsToShow()">
+      <div class="department-header" (click)="toggleDepartment(dept.id)">
+        <span class="department-name">{{ dept.name }}</span>
+        <span class="user-count">Users: {{ getUsersForDepartment(dept.id).length }}</span>
+        <span class="accordion-icon">{{ expandedDepartmentId === dept.id ? '▼' : '▶' }}</span>
+      </div>
+      
+      <div class="department-users" *ngIf="expandedDepartmentId === dept.id">
+        <div class="user" *ngFor="let user of getUsersForDepartment(dept.id)">
+          {{ user.name }}
+        </div>
+        <div *ngIf="getUsersForDepartment(dept.id).length === 0" class="no-users">
+          No users in this department
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
