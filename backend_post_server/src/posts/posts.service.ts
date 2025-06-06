@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/post.dto';
@@ -19,31 +20,40 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   async findAllPost(): Promise<PostWithRelations[]> {
-    return await this.prisma.post.findMany({
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    try {
+      return await this.prisma.post.findMany({
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
-        },
-        comments: {
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+          comments: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to retrieve posts');
+    }
   }
 
   async findOnePost(id: number): Promise<PostWithRelations> {
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('Invalid post ID');
+    }
+
     const post = await this.prisma.post.findUnique({
       where: { id },
       include: {
@@ -79,21 +89,34 @@ export class PostsService {
     userId: number,
     data: CreatePostDto,
   ): Promise<PostWithRelations> {
-    return this.prisma.post.create({
-      data: {
-        ...data,
-        authorId: userId,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
+
+    if (!data.title || !data.body) {
+      throw new BadRequestException('Title and body are required');
+    }
+
+    try {
+      return await this.prisma.post.create({
+        data: {
+          ...data,
+          authorId: userId,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to create post');
+    }
   }
 
   async updatePost(
@@ -101,6 +124,18 @@ export class PostsService {
     userId: number,
     data: { title?: string; body?: string },
   ): Promise<PostWithRelations> {
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('Invalid post ID');
+    }
+
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
+
+    if (!data.title && !data.body) {
+      throw new BadRequestException('No data provided for update');
+    }
+
     const post = await this.prisma.post.findUnique({
       where: { id },
     });
@@ -113,22 +148,35 @@ export class PostsService {
       throw new ForbiddenException('You can only update your own posts');
     }
 
-    return this.prisma.post.update({
-      where: { id },
-      data,
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    try {
+      return await this.prisma.post.update({
+        where: { id },
+        data,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to update post');
+    }
   }
 
   async removePost(id: number, userId: number): Promise<{ message: string }> {
+    if (!id || isNaN(id)) {
+      throw new BadRequestException('Invalid post ID');
+    }
+
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
+
     const post = await this.prisma.post.findUnique({
       where: { id },
     });
@@ -141,10 +189,15 @@ export class PostsService {
       throw new ForbiddenException('You can only delete your own posts');
     }
 
-    await this.prisma.post.delete({
-      where: { id },
-    });
+    try {
+      await this.prisma.post.delete({
+        where: { id },
+      });
 
-    return { message: 'Post deleted successfully' };
+      return { message: 'Post deleted successfully' };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to delete post');
+    }
   }
 }

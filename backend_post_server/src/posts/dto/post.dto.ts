@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'title is required' })
   @IsString()
   title: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'body is required' })
   @IsString()
   body: string;
 }
